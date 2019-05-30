@@ -1,0 +1,8 @@
+Time[ms]    Caller                   Code  Description         
+50          topic_2->node_0          1     msg 4 late. 4356us > 2000us
+2886        topic_2->node_1          1     msg 287 late. 9921us > 2000us
+2886        topic_2->node_0          1     msg 287 late. 9901us > 2000us
+2908        topic_2->node_0          1     msg 290 late. 2498us > 2000us
+5339        topic_2->node_1          1     msg 533 late. 3260us > 2000us
+5339        topic_2->node_0          1     msg 533 late. 3288us > 2000us
+6198        topic_2->node_0          1     msg 619 late. 2035us > 2000us
