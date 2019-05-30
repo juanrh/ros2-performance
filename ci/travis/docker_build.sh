@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 function initialize_environment {
     apt-get update
