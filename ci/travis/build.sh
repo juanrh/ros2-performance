@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ex
+set -e
 
 docker image pull osrf/ros2:nightly
 docker container run -it --rm -v "${TRAVIS_BUILD_DIR}/..:/opt/workspace/src" \

@@ -24,7 +24,7 @@ function setup_rmw_dps {
     # For ros2-performance all workspaces or none have to be build with merge install, and
     # ROS 2 was built with merge install in this image
     colcon build --packages-up-to rmw_dps_cpp --merge-install
-    colcon test --packages-select rmw_dps_cpp
+    colcon test --packages-select rmw_dps_cpp --merge-install
     colcon test-result --verbose
     
     source install/setup.bash
