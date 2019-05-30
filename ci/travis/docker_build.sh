@@ -38,16 +38,19 @@ function setup_ros2_performance {
 }
 
 function run_experiments {
+    echo "Running experiments"
     pushd src/ros2-performance/performances/performance_test
     source env.sh
-    RMW_IMPLEMENTATION=rmw_dps_cpp bash "scripts/${SCRIPT}"
+    RMW_IMPLEMENTATION=rmw_dps_cpp bash -x "scripts/${SCRIPT}"
     popd
+    echo "Done running experiments"
 }
 
 function publish_experiments_results {
+    echo "Publishing experiments results"
     # TODO build plots
     # use PLOT_FILENAME to enable plotting to file
-    echo TODO
+    echo "Done publishing experiments results"
 }
 
 initialize_environment
