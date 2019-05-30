@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 function initialize_environment {
     apt-get update
     source /opt/ros/dashing/setup.bash
@@ -50,11 +52,22 @@ function run_experiments {
 
 function publish_experiments_results {
     echo "Publishing experiments results"
+    pip3 install jinja2>=2.10 --user
+
+    pushd src/ros2-performance
+    SCRIPT_NAME="${SCRIPT%.*}"
+    RESULTS_ROOT="results/${CURRENT_DATE_FORMAT}-${SCRIPT_NAME}"
+    mkdir -p "${RESULTS_ROOT}"
+    cp performances/performance_test/results/${SCRIPT_NAME}/*.csv ${RESULTS_ROOT}
+    python3 "${SCRIPT_DIR}/write_results_index.py" "${RESULTS_ROOT}"
+
     # TODO build plots
     # use PLOT_FILENAME to enable plotting to file
+    popd
     echo "Done publishing experiments results"
 }
 
+export CURRENT_DATE_FORMAT="$(date +%Y-%m-%d_%H-%M-%S)_UTC"
 initialize_environment
 setup_git
 
