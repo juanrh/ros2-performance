@@ -26,6 +26,9 @@ import re
 from io import StringIO
 from collections import defaultdict, OrderedDict
 
+if os.environ.get("PLOT_FILENAME"):
+    import matplotlib
+    matplotlib.use('Agg')
 import matplotlib.pyplot
 import matplotlib.ticker
 
