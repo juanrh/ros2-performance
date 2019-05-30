@@ -33,6 +33,8 @@ function setup_rmw_dps {
 
 function setup_ros2_performance {
     echo "Setting up ros2-performance"
+    echo "WORKAROUND: disabling wait_for_discovery for performance experiments until is is supported by RMW DPS"
+    sed -i 's@this->wait_discovery@//this->wait_discovery@g' src/ros2-performance/performances/performance_test/src/ros2/system.cpp
     colcon build --packages-up-to performance_test_msgs performance_test --merge-install
     echo "Done setting up ros2-performance"
 }
