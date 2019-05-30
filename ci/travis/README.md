@@ -1,6 +1,6 @@
 # Local development
 
-Simulate a Travis build
+## Simulate a Travis build
 
 ```bash
 export TRAVIS_BUILD_DIR=$(pwd)/src/ros2-performance
@@ -16,9 +16,10 @@ rm -rf src/rmw_dps/
 src/ros2-performance/ci/travis/build.sh
 ```
 
-Debug inside the container
+## Debug inside the container
 
 ```bash
+export TRAVIS_BUILD_DIR=$(pwd)/src/ros2-performance
 docker run -it --rm -v "${TRAVIS_BUILD_DIR}/..:/opt/workspace/src" \
     --network host --name=osrf_ros2_nightly --privileged osrf/ros2:nightly \
     /bin/bash
