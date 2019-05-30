@@ -1,0 +1,13 @@
+sudo: required
+language: generic
+env:
+  global:
+    - SH=bash
+  matrix:
+    # Using (mostly) default values, TODO setup suite
+    - SCRIPT=pub_sub_ros2.sh MSG_TYPES=10b MAX_PUBLISHERS=1 MAX_SUBSCRIBERS=5 PUBLISH_FREQUENCIES=100 DURATION=10 NUM_EXPERIMENTS=2
+    - SCRIPT=pub_sub_separate_process.sh MSG_TYPES=10b MAX_PUBLISHERS=1 MAX_SUBSCRIBERS=5 PUBLISH_FREQUENCIES=100 DURATION=10 NUM_EXPERIMENTS=2
+    - SCRIPT=client_service_ros2.sh MAX_SERVICES=1 MAX_CLIENTS=5 REQUEST_FREQUENCIES=100 DURATION=10 NUM_EXPERIMENTS=2
+    - SCRIPT=only_subs.sh MSG_TYPES=10b MAX_PUBLISHERS=1 MAX_SUBSCRIBERS=5 DURATION=10 NUM_EXPERIMENTS=2
+script:
+- ./ci/travis/build.sh
