@@ -58,7 +58,7 @@ function run_benchmarks {
         echo "--------------------------------------------------"
         echo "Running benchmark [${BENCHMARK_ID}]"
         echo "--------------------------------------------------"
-        ./benchmark "topology/${BENCHMARK_ID}.json" -t ${TEST_DURATION} --ipc ${IPC}
+        RMW_IMPLEMENTATION=rmw_dps_cpp ./benchmark "topology/${BENCHMARK_ID}.json" -t ${TEST_DURATION} --ipc ${IPC}
         echo "Done running benchmark [${BENCHMARK_ID}]"
         echo
 
