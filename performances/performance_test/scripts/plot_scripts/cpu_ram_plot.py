@@ -168,6 +168,7 @@ def main(argv):
     parser.add_argument('--separator', nargs='+', default=[], choices=['send_frequency', 'directory', 'pubs', 'subs', 'msg_size'], help='if not set all data are aggregated together, else aggregates only data which have the same value for the separator keys')
     parser.add_argument('--target', type=str, default="", help='Pass a target json file to evaluate current plot')
     parser.add_argument('--skip', type=int, default=0, help='Skip the first N seconds of each test')
+    parser.add_argument('--plot-filename', type=str, default='', help='Path to a file where the plot will be stored')
 
     args = parser.parse_args()
 
@@ -210,7 +211,7 @@ def main(argv):
         parsed_target_json = common.parse_target_json(args.target, "resources")
         parsed_target_json = fix_target_names(parsed_target_json)
 
-    common.plot_function(data, x_key, y1_keys, y2_keys, separator, parsed_target_json)
+    common.plot_function(data, x_key, y1_keys, y2_keys, separator, parsed_target_json, args.plot_filename)
 
 
 if __name__ == '__main__':

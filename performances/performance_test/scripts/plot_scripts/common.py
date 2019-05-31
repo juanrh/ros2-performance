@@ -282,7 +282,7 @@ def get_plot_data(data, key):
 
 
 
-def plot_function(data_dict, x_key, y1_keys, y2_keys, separator, target = {}):
+def plot_function(data_dict, x_key, y1_keys, y2_keys, separator, target = {}, plot_filename = ''):
 
 
     # prepare plot and x-y axes
@@ -428,5 +428,8 @@ def plot_function(data_dict, x_key, y1_keys, y2_keys, separator, target = {}):
 
     fig.tight_layout()
     matplotlib.pyplot.grid()
-    matplotlib.pyplot.show()
+    if len(plot_filename) > 0:
+        matplotlib.pyplot.savefig(plot_filename)
+    else:
+        matplotlib.pyplot.show()
     
