@@ -42,15 +42,64 @@ function setup_ros2_performance {
 }
 
 function run_experiments {
+    # Using (mostly) default values, TODO setup suite more carefully
+    
+    function experiment_setup1 {
+        export SCRIPT=pub_sub_ros2.sh
+        export MSG_TYPES=10b 
+        export MAX_PUBLISHERS=1
+        export MAX_SUBSCRIBERS=5
+        export PUBLISH_FREQUENCIES=100
+        export DURATION=10
+        export NUM_EXPERIMENTS=2
+    }
+
+    function experiment_setup2 {
+        export SCRIPT=pub_sub_separate_process.sh
+        export MSG_TYPES=10b 
+        export MAX_PUBLISHERS=1 
+        export MAX_SUBSCRIBERS=5
+        export PUBLISH_FREQUENCIES=100 
+        export DURATION=10
+        export NUM_EXPERIMENTS=2
+    }
+
+    function experiment_setup3 {
+        export SCRIPT=client_service_ros2.sh 
+        export MAX_SERVICES=1 
+        export MAX_CLIENTS=5 
+        export REQUEST_FREQUENCIES=100
+        export DURATION=10
+        export NUM_EXPERIMENTS=2
+    }
+
+    function experiment_setup4 {
+        export SCRIPT=only_subs.sh
+        export MSG_TYPES=10b
+        export MAX_PUBLISHERS=1
+        export MAX_SUBSCRIBERS=5
+        export DURATION=10
+        export NUM_EXPERIMENTS=2
+    }
+
+    EXPERIMENT_SETUPS="experiment_setup1 experiment_setup2 experiment_setup3 experiment_setup4"
     echo "Running experiments"
     pushd src/ros2-performance/performances/performance_test
     source env.sh
-    RMW_IMPLEMENTATION=rmw_dps_cpp bash -x "scripts/${SCRIPT}"
+    for EXPERIMENT_SETUP in ${EXPERIMENT_SETUPS}
+    do
+        set -x
+        ${EXPERIMENT_SETUP}
+        set +x
+        RMW_IMPLEMENTATION=rmw_dps_cpp bash -x "scripts/${SCRIPT}"
+    done    
     popd
     echo "Done running experiments"
 }
 
 function publish_experiments_results {
+    # FIXME: this is broken until adapted to running multiple experiments on run_experiments
+
     echo "Publishing experiments results"
     pip3 install jinja2>=2.10 --user
 
