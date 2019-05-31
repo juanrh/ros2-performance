@@ -56,6 +56,7 @@ def main(argv):
     parser.add_argument('--latency', type=str, help='Pass the latency_total txt file')
     parser.add_argument('--target', type=str, help='Pass a target json file to evaluate current plot')
     parser.add_argument('--skip', type=int, default=2, help='Skip the first N seconds of each test')
+    parser.add_argument('--plot-filename', type=str, default='', help='Path to a file where the plot will be stored')
 
     args = parser.parse_args()
 
@@ -129,7 +130,10 @@ def main(argv):
             labelbottom=False) # labels along the bottom edge are off
 
     fig.tight_layout()
-    matplotlib.pyplot.show()
+    if len(args.plot_filename) > 0:
+        matplotlib.pyplot.savefig(args.plot_filename)
+    else:
+        matplotlib.pyplot.show()
 
 
 if __name__ == '__main__':

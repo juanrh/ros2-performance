@@ -428,10 +428,5 @@ def plot_function(data_dict, x_key, y1_keys, y2_keys, separator, target = {}):
 
     fig.tight_layout()
     matplotlib.pyplot.grid()
-
-    plot_filename = os.environ.get("PLOT_FILENAME")
-    if plot_filename:
-        matplotlib.pyplot.savefig(plot_filename)
-    else:
-        matplotlib.pyplot.show()
+    matplotlib.pyplot.show()
     
