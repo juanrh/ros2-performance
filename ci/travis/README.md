@@ -15,6 +15,7 @@ export PUBLISH_FREQUENCIES=100
 export DURATION=10
 export NUM_EXPERIMENTS=2
 export SCRIPT=pub_sub_ros2.sh
+... # any additional env vars used by the container
 
 rm -rf src/rmw_dps/
 src/ros2-performance/ci/travis/build.sh

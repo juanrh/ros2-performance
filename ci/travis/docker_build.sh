@@ -75,7 +75,6 @@ function publish_experiments_results {
     echo "Done publishing experiments results"
 }
 
-export CURRENT_DATE_FORMAT="$(date +%Y-%m-%d_%H-%M-%S)_UTC"
 initialize_environment
 setup_git
 
