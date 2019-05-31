@@ -14,7 +14,7 @@ function initialize_environment {
 
 function setup_git {
     git config --global user.name nobody
-    git config --global user.email noreply@osrfoundation.org
+    git config --global user.email noreply@none.org
 }
 
 function setup_rmw_dps {
@@ -55,11 +55,19 @@ function publish_experiments_results {
     pip3 install jinja2>=2.10 --user
 
     pushd src/ros2-performance
+    git clone --branch=${GH_PAGES_BRANCH} https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git ${GH_PAGES_BRANCH}
     SCRIPT_NAME="${SCRIPT%.*}"
-    RESULTS_ROOT="results/${CURRENT_DATE_FORMAT}-${SCRIPT_NAME}"
+    RESULTS_ID="${CURRENT_DATE_FORMAT}-${SCRIPT_NAME}"
+    RESULTS_ROOT="${GH_PAGES_BRANCH}/results/${RESULTS_ID}"
     mkdir -p "${RESULTS_ROOT}"
-    cp performances/performance_test/results/${SCRIPT_NAME}/*.csv ${RESULTS_ROOT}
+    cp performances/performance_test/results/*/* ${RESULTS_ROOT}
     python3 "${SCRIPT_DIR}/write_results_index.py" "${RESULTS_ROOT}"
+    pushd ${GH_PAGES_BRANCH}
+    echo "- [Experiment ${RESULTS_ID}](results/${RESULTS_ID}) for [Travis build ${TRAVIS_BUILD_NUMBER}](${TRAVIS_BUILD_WEB_URL}) and [Travis job ${TRAVIS_JOB_NUMBER}](${TRAVIS_JOB_WEB_URL})" >> README.md
+    git add .
+    git commit -m "Upload ${RESULTS_ROOT} for Travis build ${TRAVIS_BUILD_NUMBER} and job ${TRAVIS_JOB_NUMBER}"
+    git push origin ${GH_PAGES_BRANCH}
+    popd
 
     # TODO build plots
     # use PLOT_FILENAME to enable plotting to file
