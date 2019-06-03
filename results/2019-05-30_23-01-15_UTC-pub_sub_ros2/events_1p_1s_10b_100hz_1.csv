@@ -1,2 +1,0 @@
-Time[ms]    Caller                   Code  Description         
-13          topic_1->node_0          1     msg 0 late. 4210us > 2000us

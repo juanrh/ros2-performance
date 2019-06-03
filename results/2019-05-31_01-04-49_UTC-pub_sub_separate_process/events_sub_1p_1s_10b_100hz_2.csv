@@ -1,3 +1,0 @@
-Time[ms]    Caller                   Code  Description         
-5936        topic_1->node_0          1     msg 393 late. 4490us > 2000us
-5944        topic_1->node_0          1     msg 394 late. 3023us > 2000us

@@ -1,7 +1,0 @@
-Time[ms]    Caller                   Code  Description         
-4885        topic_3->node_1          1     msg 287 late. 9002us > 2000us
-4885        topic_3->node_0          1     msg 287 late. 9204us > 2000us
-4887        topic_3->node_2          2     msg 287 too late. 11508us > 10000us
-11788       topic_3->node_0          1     msg 978 late. 2009us > 2000us
-11788       topic_3->node_1          1     msg 978 late. 2231us > 2000us
-11790       topic_3->node_2          1     msg 978 late. 3954us > 2000us

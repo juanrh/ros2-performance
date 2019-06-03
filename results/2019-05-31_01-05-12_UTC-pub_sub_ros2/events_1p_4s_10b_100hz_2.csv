@@ -1,5 +1,0 @@
-Time[ms]    Caller                   Code  Description         
-6           topic_4->node_2          1     msg 0 late. 2046us > 2000us
-6           topic_4->node_0          1     msg 0 late. 2274us > 2000us
-6           topic_4->node_3          1     msg 0 late. 2438us > 2000us
-6           topic_4->node_1          1     msg 0 late. 2517us > 2000us

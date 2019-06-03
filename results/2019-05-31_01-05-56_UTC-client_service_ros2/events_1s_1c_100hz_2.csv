@@ -1,6 +1,0 @@
-Time[ms]    Caller                   Code  Description         
-1989        service_1->node_0        1     msg 198 late. 4795us > 2000us
-2035        service_1->node_1        1     msg 203 late. 3989us > 2000us
-2037        service_1->node_0        1     msg 203 late. 5513us > 2000us
-2053        service_1->node_0        1     msg 205 late. 2141us > 2000us
-2075        service_1->node_0        1     msg 207 late. 3314us > 2000us
