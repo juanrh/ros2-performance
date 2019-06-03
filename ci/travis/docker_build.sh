@@ -7,7 +7,9 @@ function initialize_environment {
     apt-get update
     source /opt/ros/dashing/setup.bash
     pip3 install 'jinja2>=2.10' --user
-    echo "backend: Agg" > ~/.config/matplotlib/matplotlibrc
+    MATPLOTLIB_RC="${HOME}/.config/matplotlib/matplotlibrc"
+    mkdir -p "$(dirname ${MATPLOTLIB_RC})"
+    echo "backend: Agg" > "${MATPLOTLIB_RC}"
 
     export ROS2_SDK_INSTALL_PATH="/opt/ros/dashing"
     export ROS2_PERFORMANCE_TEST_INSTALL_PATH="/opt/workspace/install/"
