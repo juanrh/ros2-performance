@@ -97,7 +97,7 @@ function publish_benchmark_results {
     RESULTS_ID="${CURRENT_DATE_FORMAT}"
     RESULTS_ROOT="results/${RESULTS_ID}"
     echo "Publishing benchmark results for [${RESULTS_ID}]"
-    python3 "${SCRIPT_DIR}/write_results_index.py" "${RESULTS_ROOT}"
+    python3 "${SCRIPT_DIR}/write_results_index.py" "${RESULTS_ROOT}" "${TRAVIS_BUILD_NUMBER}" "${TRAVIS_BUILD_WEB_URL}" "${TRAVIS_JOB_NUMBER}" "${TRAVIS_JOB_WEB_URL}"
     echo "- [Benchmark ${RESULTS_ID}](results/${RESULTS_ID}) for [Travis build ${TRAVIS_BUILD_NUMBER}](${TRAVIS_BUILD_WEB_URL}) and [Travis job ${TRAVIS_JOB_NUMBER}](${TRAVIS_JOB_WEB_URL})" >> README.md
     git add .
     git commit -m "Upload ${RESULTS_ROOT} for Travis build ${TRAVIS_BUILD_NUMBER} and job ${TRAVIS_JOB_NUMBER}"
