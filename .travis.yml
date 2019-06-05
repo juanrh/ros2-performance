@@ -3,7 +3,8 @@ language: generic
 env:
   global:
   - SH=bash
-  - GH_PAGES_BRANCH=gh-pages
+  # FIXME: remove when devel done
+  - GH_PAGES_BRANCH=gh-pages-test
   - secure: s4+R5tH0AADuGe1bQUKiQbaKV7CsCktslKtUprV44eCreDqjUJ4xZlgHElM8XSWlJoJq+d6ikzYzyDOcMTDhNeZPcq1krOZ+h/fVAKPwjRxs1DjmKqv9pkMi/sgfGAi42BysFRA9TjXPHVamCUMKOvkM9gVMJfAHuo8wQBfYAP+LeZzr6KLZ/SW7phDYilkS2hcCfXXLn0kF/OvvLuH1H8L5gKZINyiIicbxIuCvLSdljT86bC6iY9gIrb94M3Xoo+WaLJfHndItrYKHWevzEYqDdEbyR/HEiLD8EbG6dmX4LVRYDePTtIYbw4/AO+PTZya5IvBgcm3o0iVkARkdYCvMrlCm+sVuVbtKeWf80vzQfx1AWklsGjxeOVCqCCynidZB+ZEu78pOV/TMfhaUCmE8+8PKBKRoZXXVIB4mTv37qdu/27RW24qRh3k/P34zXmzcDGUxY14QEGsxotqE8LGACVC54E02KK8PsTZzkdNkxetxFOxcs0Z/RCOZ6gQC/XGoEL8leAamIO9qfpwRMYMQCicU34oOUpDF3McWPPSi93tzsZjQEE4im+SDcimMcan/VdiUU8qs7hPf9RMLC2XBGP+6Q+jV7ujBzpXXP8l2t9rGODHx2OMYgX1yL+SJ7dr8A+lDLEEQlnBOBvX7Wz+YV6Iw9dNmVgBvFVokyMU=
 script:
 # NOTE: we cannot use an array job here because that leads to race conditions when different jobs
