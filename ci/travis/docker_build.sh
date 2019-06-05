@@ -32,9 +32,41 @@ function setup_rmw_dps {
     colcon build --packages-up-to rmw_dps_cpp --merge-install
     colcon test --packages-select rmw_dps_cpp --merge-install
     colcon test-result --verbose
-    
-    source install/setup.bash
     echo "Done setting up DPS RMW"
+}
+
+function setup_rmw_cyclonedds {
+    echo "Setting up Cyclone DDS RMW"
+    CYCLONE_DDS_ROOT='/opt/cyclonedds'
+    echo "Installing Cyclone DDS at [${CYCLONE_DDS_ROOT}]"
+    mkdir -p "${CYCLONE_DDS_ROOT}"
+    mkdir -p "${CYCLONE_DDS_ROOT}-src"
+    pushd "${CYCLONE_DDS_ROOT}-src"
+    git clone https://github.com/eclipse-cyclonedds/cyclonedds.git
+    # Install dependencies. Per https://github.com/eclipse-cyclonedds/cyclonedds#building-eclipse-cyclone-dds
+    # > The Java-based components are the preprocessor and a configurator tool. The run-time libraries are pure C code, so there is no need to have Java available on "target" machines.
+    apt-get install maven default-jdk -y
+    mkdir cyclonedds/build
+    pushd cyclonedds/build
+    cmake -DCMAKE_INSTALL_PREFIX="${CYCLONE_DDS_ROOT}" ../src/
+    cmake --build .
+    cmake --build . --target install
+    popd
+    # Set this if using a value for CYCLONE_DDS_ROOT that is not a standard path
+    # export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH};${CYCLONE_DDS_ROOT}
+    echo "Done installing Cyclone DDS"
+
+    pushd src
+    git clone https://github.com/atolab/rmw_cyclonedds.git
+    popd
+    rosdep update && rosdep install --from-paths src/rmw_cyclonedds --ignore-src -r -y
+    # For ros2-performance all workspaces or none have to be build with merge install, and
+    # ROS 2 was built with merge install in this image
+    colcon build --packages-up-to rmw_cyclonedds_cpp --merge-install
+    # Disabled as currently the repo has cpplint test failures
+    # colcon test --packages-select rmw_cyclonedds_cpp --merge-install
+    # colcon test-result --verbose
+    done "Setting up Cyclone DDS RMW"
 }
 
 function setup_ros2_performance {
@@ -113,6 +145,7 @@ mkdir -p /opt/workspace/src
 pushd /opt/workspace
 setup_rmw_dps
 setup_ros2_performance
+source install/setup.bash
 run_benchmarks
 publish_benchmark_results
 popd
