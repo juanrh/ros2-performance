@@ -21,6 +21,18 @@ function setup_git {
     git config --global user.email noreply@none.org
 }
 
+function safe_run {
+    # Runs a command redirecting it's stdout to stderr, prints the return code on the stdout
+    # and always returns 0
+    # Examples: 
+    #   C=$(safe_run 'ls -al asdasd')
+    #   C=$(safe_run 'ls -al')
+    CMD="${1}"
+    RETURN_CODE=0
+    ${CMD} 1>&2 || RETURN_CODE=$?
+    echo ${RETURN_CODE}
+}
+
 function setup_rmw_dps {
     echo "Setting up DPS RMW"
     pushd src
@@ -30,14 +42,12 @@ function setup_rmw_dps {
     # For ros2-performance all workspaces or none have to be build with merge install, and
     # ROS 2 was built with merge install in this image
     colcon build --packages-up-to rmw_dps_cpp --merge-install
-    colcon test --packages-select rmw_dps_cpp --merge-install
-    colcon test-result --verbose
     echo "Done setting up DPS RMW"
 }
 
 function setup_rmw_cyclonedds {
     echo "Setting up Cyclone DDS RMW"
-    CYCLONE_DDS_ROOT='/opt/cyclonedds'
+    export CYCLONE_DDS_ROOT='/opt/cyclonedds'
     echo "Installing Cyclone DDS at [${CYCLONE_DDS_ROOT}]"
     mkdir -p "${CYCLONE_DDS_ROOT}"
     mkdir -p "${CYCLONE_DDS_ROOT}-src"
@@ -52,8 +62,14 @@ function setup_rmw_cyclonedds {
     cmake --build .
     cmake --build . --target install
     popd
+    popd
     # Set this if using a value for CYCLONE_DDS_ROOT that is not a standard path
     # export CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH};${CYCLONE_DDS_ROOT}
+    # This is required because cyclonedds is installed without using ROS, so 
+    # ROS packages fail with "Cannot load library: libddsc.so.0" when using 
+    # `RMW_IMPLEMENTATION=rmw_cyclonedds_cpp` if we don't set LD_LIBRARY_PATH
+    # TODO modify rmw_cyclonedds to install cyclonedds properly
+    export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${CYCLONE_DDS_ROOT}/lib
     echo "Done installing Cyclone DDS"
 
     pushd src
@@ -66,7 +82,7 @@ function setup_rmw_cyclonedds {
     # Disabled as currently the repo has cpplint test failures
     # colcon test --packages-select rmw_cyclonedds_cpp --merge-install
     # colcon test-result --verbose
-    done "Setting up Cyclone DDS RMW"
+    echo "Done setting up Cyclone DDS RMW"
 }
 
 function setup_ros2_performance {
@@ -86,6 +102,7 @@ function run_benchmarks {
     pushd install/lib/benchmark
     git clone --branch=${GH_PAGES_BRANCH} https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git ${GH_PAGES_BRANCH}
     PERFORMANCES_ROOT="$(pwd)/../../../src/ros2-performance/performances"
+    BENCHMARK_EXIT_CODE_FILE='log/benchmark_exit_code.txt'
 
     for BENCHMARK_ID in ${BENCHMARK_IDS}
     do
@@ -93,8 +110,9 @@ function run_benchmarks {
         echo "--------------------------------------------------"
         echo "Running benchmark [${BENCHMARK_ID}]"
         echo "--------------------------------------------------"
-        RMW_IMPLEMENTATION=rmw_dps_cpp ./benchmark "topology/${BENCHMARK_ID}.json" -t ${TEST_DURATION} --ipc ${IPC}
-        echo "Done running benchmark [${BENCHMARK_ID}]"
+        BENCHMARK_EXIT_CODE=$(RMW_IMPLEMENTATION=rmw_dps_cpp safe_run "./benchmark "topology/${BENCHMARK_ID}.json" -t ${TEST_DURATION} --ipc ${IPC}")
+        echo ${BENCHMARK_EXIT_CODE} > ${BENCHMARK_EXIT_CODE_FILE}
+        echo "Execution of benchmark [${BENCHMARK_ID}] completed with exit code [${BENCHMARK_EXIT_CODE}]"
         echo
 
         RESULTS_ID="${CURRENT_DATE_FORMAT}/${BENCHMARK_ID}"
@@ -102,6 +120,7 @@ function run_benchmarks {
         mkdir -p "${RESULTS_ROOT}"
         # copy results data 
         tar cvzf "${RESULTS_ROOT}/log.tgz" log
+        cp "${BENCHMARK_EXIT_CODE_FILE}" "${RESULTS_ROOT}"
         # generate plots
         mkdir -p "${RESULTS_ROOT}/plots"
         python3 "${PERFORMANCES_ROOT}/performance_test/scripts/plot_scripts/benchmark_app_evaluation.py" \
@@ -144,8 +163,8 @@ setup_git
 mkdir -p /opt/workspace/src
 pushd /opt/workspace
 setup_rmw_dps
+setup_rmw_cyclonedds
 setup_ros2_performance
-source install/setup.bash
 run_benchmarks
 publish_benchmark_results
 popd
