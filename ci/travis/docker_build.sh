@@ -112,7 +112,8 @@ function setup_ros2_performance {
 }
 
 function setup_gh_pages {
-    pushd install/lib/benchmark
+    mkdir -p /opt/gh_pages
+    pushd /opt/gh_pages
     git clone --branch=${GH_PAGES_BRANCH} https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git ${GH_PAGES_BRANCH}
     export GH_PAGES_ROOT="$(pwd)/${GH_PAGES_BRANCH}"
     popd
