@@ -192,10 +192,12 @@ setup_gh_pages
 RMW_IMPLS='dps cyclonedds'
 for RMW_IMPL in ${RMW_IMPLS}
 do
+    echo
     echo "Running benchmarks for RMW implementation [${RMW_IMPL}]"
     setup_rmw_${RMW_IMPL}
     run_benchmarks
     echo "Done running benchmarks for RMW implementation [${RMW_IMPL}]"
+    echo
 done
 
 publish_benchmark_results
