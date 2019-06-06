@@ -35,6 +35,8 @@ function safe_run {
 
 function setup_rmw_dps {
     echo "Setting up DPS RMW"
+    echo
+
     pushd src
     git clone https://github.com/ros2/rmw_dps.git
     popd
@@ -42,11 +44,22 @@ function setup_rmw_dps {
     # For ros2-performance all workspaces or none have to be build with merge install, and
     # ROS 2 was built with merge install in this image
     colcon build --packages-up-to rmw_dps_cpp --merge-install
+
+    echo "WORKAROUND: disabling wait_for_discovery for performance experiments until is is supported by RMW DPS"
+    PATCHED_FILE='src/ros2-performance/performances/performance_test/src/ros2/system.cpp'
+    sed -i 's@this->wait_discovery@//this->wait_discovery@g' "${PATCHED_FILE}"
+    setup_ros2_performance
+    pushd $(dirname "${PATCHED_FILE}")
+    git checkout $(basename "${PATCHED_FILE}")
+    popd
+
+    echo
     echo "Done setting up DPS RMW"
 }
 
 function setup_rmw_cyclonedds {
     echo "Setting up Cyclone DDS RMW"
+    echo
     export CYCLONE_DDS_ROOT='/opt/cyclonedds'
     echo "Installing Cyclone DDS at [${CYCLONE_DDS_ROOT}]"
     mkdir -p "${CYCLONE_DDS_ROOT}"
@@ -82,28 +95,38 @@ function setup_rmw_cyclonedds {
     # Disabled as currently the repo has cpplint test failures
     # colcon test --packages-select rmw_cyclonedds_cpp --merge-install
     # colcon test-result --verbose
+
+    setup_ros2_performance
+
+    echo
     echo "Done setting up Cyclone DDS RMW"
 }
 
 function setup_ros2_performance {
     echo "Setting up ros2-performance"
-    echo "WORKAROUND: disabling wait_for_discovery for performance experiments until is is supported by RMW DPS"
-    sed -i 's@this->wait_discovery@//this->wait_discovery@g' src/ros2-performance/performances/performance_test/src/ros2/system.cpp
+    echo
+    rm -rf build/performance_test* build/benchmark*
     colcon build --packages-up-to performance_test benchmark --merge-install
+    echo
     echo "Done setting up ros2-performance"
+}
+
+function setup_gh_pages {
+    pushd install/lib/benchmark
+    git clone --branch=${GH_PAGES_BRANCH} https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git ${GH_PAGES_BRANCH}
+    export GH_PAGES_ROOT="$(pwd)/${GH_PAGES_BRANCH}"
+    popd
 }
 
 function run_benchmarks {
     TEST_DURATION=60
     IPC='on'
     BENCHMARK_IDS='sierra_nevada mont_blanc'
+    PERFORMANCES_ROOT="/opt/workspace/src/ros2-performance/performances"
+    BENCHMARK_EXIT_CODE_FILE='log/benchmark_exit_code.txt'
 
     source install/local_setup.bash
     pushd install/lib/benchmark
-    git clone --branch=${GH_PAGES_BRANCH} https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git ${GH_PAGES_BRANCH}
-    PERFORMANCES_ROOT="$(pwd)/../../../src/ros2-performance/performances"
-    BENCHMARK_EXIT_CODE_FILE='log/benchmark_exit_code.txt'
-
     for BENCHMARK_ID in ${BENCHMARK_IDS}
     do
         ${BENCHMARK_SETUP}
@@ -115,8 +138,8 @@ function run_benchmarks {
         echo "Execution of benchmark [${BENCHMARK_ID}] completed with exit code [${BENCHMARK_EXIT_CODE}]"
         echo
 
-        RESULTS_ID="${CURRENT_DATE_FORMAT}/${BENCHMARK_ID}"
-        RESULTS_ROOT="${GH_PAGES_BRANCH}/results/${RESULTS_ID}"
+        RESULTS_ID="${CURRENT_DATE_FORMAT}/rmw_${RMW_IMPL}/${BENCHMARK_ID}"
+        RESULTS_ROOT="${GH_PAGES_ROOT}/results/${RESULTS_ID}"
         mkdir -p "${RESULTS_ROOT}"
         # copy results data 
         tar cvzf "${RESULTS_ROOT}/log.tgz" log
@@ -142,13 +165,14 @@ function run_benchmarks {
 }
 
 function publish_benchmark_results {
-    pushd "install/lib/benchmark/${GH_PAGES_BRANCH}"
+    pushd "${GH_PAGES_ROOT}"
 
     # Upload the results for all benchmarks run on this job
     RESULTS_ID="${CURRENT_DATE_FORMAT}"
     RESULTS_ROOT="results/${RESULTS_ID}"
     echo "Publishing benchmark results for [${RESULTS_ID}]"
-    python3 "${SCRIPT_DIR}/write_results_index.py" "${RESULTS_ROOT}" "${TRAVIS_BUILD_NUMBER}" "${TRAVIS_BUILD_WEB_URL}" "${TRAVIS_JOB_NUMBER}" "${TRAVIS_JOB_WEB_URL}"
+    python3 "${SCRIPT_DIR}/write_results_index.py" "${RESULTS_ROOT}" \
+        "${TRAVIS_BUILD_NUMBER}" "${TRAVIS_BUILD_WEB_URL}" "${TRAVIS_JOB_NUMBER}" "${TRAVIS_JOB_WEB_URL}"
     echo "- [Benchmark ${RESULTS_ID}](results/${RESULTS_ID}) for [Travis build ${TRAVIS_BUILD_NUMBER}](${TRAVIS_BUILD_WEB_URL}) and [Travis job ${TRAVIS_JOB_NUMBER}](${TRAVIS_JOB_WEB_URL})" >> README.md
     git add .
     git commit -m "Upload ${RESULTS_ROOT} for Travis build ${TRAVIS_BUILD_NUMBER} and job ${TRAVIS_JOB_NUMBER}"
@@ -162,9 +186,16 @@ setup_git
 
 mkdir -p /opt/workspace/src
 pushd /opt/workspace
-setup_rmw_dps
-setup_rmw_cyclonedds
-setup_ros2_performance
-run_benchmarks
+setup_gh_pages
+
+RMW_IMPLS='dps cyclonedds'
+for RMW_IMPL in ${RMW_IMPLS}
+do
+    echo "Running benchmarks for RMW implementation [${RMW_IMPL}]"
+    setup_rmw_${RMW_IMPL}
+    run_benchmarks
+    echo "Done running benchmarks for RMW implementation [${RMW_IMPL}]"
+done
+
 publish_benchmark_results
 popd
