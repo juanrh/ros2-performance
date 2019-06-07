@@ -10,3 +10,4 @@
 - [Benchmark 2019-06-06_21-35-29_UTC](results/2019-06-06_21-35-29_UTC) for [Travis build 23](https://travis-ci.org/juanrh/ros2-performance/builds/542482754) and [Travis job 23.1](https://travis-ci.org/juanrh/ros2-performance/jobs/542482755)
 - [Benchmark 2019-06-06_23-50-01_UTC](results/2019-06-06_23-50-01_UTC) for [Travis build 24](https://travis-ci.org/juanrh/ros2-performance/builds/542525886) and [Travis job 24.1](https://travis-ci.org/juanrh/ros2-performance/jobs/542525887)
 - [Benchmark 2019-06-07_15-24-49_UTC](results/2019-06-07_15-24-49_UTC) for [Travis build 24](https://travis-ci.org/juanrh/ros2-performance/builds/542525886) and [Travis job 24.1](https://travis-ci.org/juanrh/ros2-performance/jobs/542525887)
+- [Benchmark 2019-06-07_16-26-17_UTC](results/2019-06-07_16-26-17_UTC) for [Travis build 25](https://travis-ci.org/juanrh/ros2-performance/builds/542852530) and [Travis job 25.1](https://travis-ci.org/juanrh/ros2-performance/jobs/542852531)
