@@ -33,12 +33,21 @@ function safe_run {
     echo ${RETURN_CODE}
 }
 
+function log_git_hash {
+    REPO_NAME="${1}"
+
+    pushd "${REPO_NAME}"
+    echo "Cloned repo [${REPO_NAME}] at commit [$(git rev-parse HEAD)]"
+    popd
+}
+
 function setup_rmw_dps {
     echo "Setting up DPS RMW"
     echo
 
     pushd src
     git clone https://github.com/ros2/rmw_dps.git
+    log_git_hash rmw_dps
     popd
     rosdep update && rosdep install --from-paths src/rmw_dps --ignore-src -r -y
     # For ros2-performance all workspaces or none have to be build with merge install, and
@@ -66,6 +75,7 @@ function setup_rmw_cyclonedds {
     mkdir -p "${CYCLONE_DDS_ROOT}-src"
     pushd "${CYCLONE_DDS_ROOT}-src"
     git clone https://github.com/eclipse-cyclonedds/cyclonedds.git
+    log_git_hash cyclonedds
     # Install dependencies. Per https://github.com/eclipse-cyclonedds/cyclonedds#building-eclipse-cyclone-dds
     # > The Java-based components are the preprocessor and a configurator tool. The run-time libraries are pure C code, so there is no need to have Java available on "target" machines.
     apt-get install maven default-jdk -y
@@ -87,6 +97,7 @@ function setup_rmw_cyclonedds {
 
     pushd src
     git clone https://github.com/atolab/rmw_cyclonedds.git
+    log_git_hash rmw_cyclonedds
     popd
     rosdep update && rosdep install --from-paths src/rmw_cyclonedds --ignore-src -r -y
     # For ros2-performance all workspaces or none have to be build with merge install, and
