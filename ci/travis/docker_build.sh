@@ -96,8 +96,13 @@ function setup_rmw_cyclonedds {
     # colcon test --packages-select rmw_cyclonedds_cpp --merge-install
     # colcon test-result --verbose
 
+    echo "WORKAROUND: disabling wait_for_discovery for performance experiments until it is supported"
+    PATCHED_FILE='src/ros2-performance/performances/performance_test/src/ros2/system.cpp'
+    sed -i 's@this->wait_discovery@//this->wait_discovery@g' "${PATCHED_FILE}"
     setup_ros2_performance
-
+    pushd $(dirname "${PATCHED_FILE}")
+    git checkout $(basename "${PATCHED_FILE}")
+    popd
     echo
     echo "Done setting up Cyclone DDS RMW"
 }
