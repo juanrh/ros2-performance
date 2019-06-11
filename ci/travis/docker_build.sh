@@ -164,14 +164,14 @@ function run_benchmarks {
         # generate plots
         mkdir -p "${RESULTS_ROOT}/plots"
         python3 "${PERFORMANCES_ROOT}/performance_test/scripts/plot_scripts/benchmark_app_evaluation.py" \
-            --target "${PERFORMANCES_ROOT}/benchmark/performance_target/sierra_nevada_rpi3.json" \
+            --target "${PERFORMANCES_ROOT}/benchmark/performance_target/${BENCHMARK_ID}_rpi3.json" \
             --resources "log/resources.txt" \
             --latency "log/latency_total.txt" \
             --plot-filename "${RESULTS_ROOT}/plots/benchmark_app_evaluation.svg"
         echo "generated ${RESULTS_ROOT}/plots/benchmark_app_evaluation.svg"
         python3 "${PERFORMANCES_ROOT}/performance_test/scripts/plot_scripts/cpu_ram_plot.py" \
             "log/resources.txt" \
-            --target "${PERFORMANCES_ROOT}/benchmark/performance_target/sierra_nevada_rpi3.json" \
+            --target "${PERFORMANCES_ROOT}/benchmark/performance_target/${BENCHMARK_ID}_rpi3.json" \
             --x time --y cpu --y2 rss \
             --plot-filename "${RESULTS_ROOT}/plots/cpu_ram_plot.svg"
         echo "generated ${RESULTS_ROOT}/plots/cpu_ram_plot.svg"
