@@ -107,13 +107,7 @@ function setup_rmw_cyclonedds {
     # colcon test --packages-select rmw_cyclonedds_cpp --merge-install
     # colcon test-result --verbose
 
-    echo "WORKAROUND: disabling wait_for_discovery for performance experiments until it is supported"
-    PATCHED_FILE='src/ros2-performance/performances/performance_test/src/ros2/system.cpp'
-    sed -i 's@this->wait_discovery@//this->wait_discovery@g' "${PATCHED_FILE}"
     setup_ros2_performance
-    pushd $(dirname "${PATCHED_FILE}")
-    git checkout $(basename "${PATCHED_FILE}")
-    popd
     echo
     echo "Done setting up Cyclone DDS RMW"
 }
@@ -146,11 +140,10 @@ function run_benchmarks {
     pushd install/lib/benchmark
     for BENCHMARK_ID in ${BENCHMARK_IDS}
     do
-        ${BENCHMARK_SETUP}
         echo "--------------------------------------------------"
-        echo "Running benchmark [${BENCHMARK_ID}]"
+        echo "Running benchmark [${BENCHMARK_ID}] for RMW implementation [${RMW_IMPL}]"
         echo "--------------------------------------------------"
-        BENCHMARK_EXIT_CODE=$(RMW_IMPLEMENTATION=rmw_dps_cpp safe_run "./benchmark "topology/${BENCHMARK_ID}.json" -t ${TEST_DURATION} --ipc ${IPC}")
+        BENCHMARK_EXIT_CODE=$(RMW_IMPLEMENTATION=rmw_${RMW_IMPL}_cpp safe_run "./benchmark "topology/${BENCHMARK_ID}.json" -t ${TEST_DURATION} --ipc ${IPC}")
         echo ${BENCHMARK_EXIT_CODE} > ${BENCHMARK_EXIT_CODE_FILE}
         echo "Execution of benchmark [${BENCHMARK_ID}] completed with exit code [${BENCHMARK_EXIT_CODE}]"
         echo
